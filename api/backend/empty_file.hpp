@@ -10,22 +10,20 @@ namespace WindowsFileAPI_EmptyFile
         TCHAR *file_to_empty;
 
     public:
+        /* Needed just in case developers explicitly includes this header file. */
         explicit EmptyFile(TCHAR *filename)
-            : file_to_empty(nullptr)
+            : file_to_empty(filename)
         {
             /* This is kind of repetitive, but it needs to be otherwise there will be complications
              * upon developers including these header files explicitly.
              * */
-#ifdef WRONG_VERSION
-           error("Wrong Version Of C++:\n\tRequired Version Is C++20: -std=c++20.\n")
-#endif 
+            check_valid_version();
         }
 
         explicit EmptyFile()
+            : file_to_empty(nullptr)
         {
-#ifdef WRONG_VERSION
-           error("Wrong Version Of C++:\n\tRequired Version Is C++20: -std=c++20.\n")
-#endif 
+            check_valid_version();
         }
 
         /* empty_file_BN - Empty a file by name (BN).

@@ -3,7 +3,9 @@
 #include <iostream>
 #include <string.h>
 #include <stdlib.h>
+#include <vector>
 
+/* Force the version of C++ to be C++20. */
 #if __cplusplus < 202002
 #define WRONG_VERSION
 #endif
@@ -26,6 +28,13 @@
 {                                               \
     fprintf(stderr, err_msg, ##__VA_ARGS__);    \
     exit(EXIT_FAILURE);                         \
+}
+
+void check_valid_version()
+{
+#ifdef WRONG_VERSION
+           error("Wrong Version Of C++:\n\tRequired Version Is C++20: -std=c++20.\n")
+#endif 
 }
 #endif
 

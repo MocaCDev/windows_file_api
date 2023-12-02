@@ -13,8 +13,13 @@ int main(int args, char *argv[])
     return 0;
 #endif
 
-    BaseAPI api;
+    std::vector<TCHAR *> f{(TCHAR *)"test_file"};
+
+    BaseAPI<true, false> api(f);
     api.empty_file_BN(static_cast<const char *>("test_file"));
+
+    assert(api.is_file_empty_BN(static_cast<const char *>("test_file")),
+        "File did not get emptied.\n")
 
     return 0;
 }
