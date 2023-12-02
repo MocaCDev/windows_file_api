@@ -64,19 +64,43 @@ namespace WindowsFileAPI_BaseAPI
             /* Do nothing if both are false (which are there default values)*/
             if(!A && !B) return;
 
-            /* Make sure the size is at least >= 1 >= 2. */
-            assert(files.size() >= 1 || files.size() >= 2,
-                "Too few files in vector passed to BaseAPI constructor.\n")
-            
-            /* If both A and B are true, make sure the size of the vector
-             * is at least 2.
-             * */
-            if(A && B)
-                assert(files.size() >= 2,
-                    "Too few files in vector passed to BaseAPI constructor.\n")
+            assert(!(A && B),
+                "Both A and B are true. Invoke one of the following BaseAPI constructors in accordance to A and B being true:\n\tBaseApi(std::vector<TCHAR *>, std::vector<TCHAR *>)\n\tBaseApi(std::vector<TCHAR *>, std::vector<TCHAR *>, bool empty_all_files = false, bool create_all_files = false, bool delete_all_files = false)")
 
-            if(A) { empty_file_object = new EmptyFile(files[0]); }//return; }
-            if(B) { create_and_delete_object = new FileCreateAndDelete(files[1]); }//return; }
+            /* Make sure the size is at least >= 1 */
+            assert(files.size() >= 1,
+                "Too few files in vector passed to BaseAPI constructor.\n")
+
+            if(A) { empty_file_object = new EmptyFile(files); return; }
+            if(B) { create_and_delete_object = new FileCreateAndDelete(files); return; }
+        }
+
+        BaseApi(std::vector<TCHAR *> file_set1, std::vector<TCHAR *> file_set2)
+        {
+            check_valid_version();
+
+            assert(A && B,
+                "Cannot call BaseAPI constructor with file set 1 and file set 2 when both parementers to template are not true.\n")
+
+            assert(file_set1.size() >= 1 && file_set2.size() >= 1,
+                "Too few files in file set 1 or file set 2 passed to BaseAPI constructor.\n")
+            
+            empty_file_object = new EmptyFile(file_set1);
+            create_and_delete_object = new FileCreateAndDelete(file_set2);
+        }
+
+        BaseApi(std::vector<TCHAR *> file_set1, std::vector<TCHAR *> file_set2, bool empty_all_files = false, bool create_all_files = false, bool delete_all_files = false)
+        {
+            check_valid_version();
+
+            assert(A && B,
+                "Cannot call BaseAPI constructor with file set 1 and file set 2 when both parementers to template are not true.\n")
+
+            assert(file_set1.size() >= 1 && file_set2.size() >= 1,
+                "Too few files in file set 1 or file set 2 passed to BaseAPI constructor.\n")
+            
+            empty_file_object = new EmptyFile(file_set1);
+            create_and_delete_object = new FileCreateAndDelete(file_set2);
         }
 
         ~BaseAPI() = default;

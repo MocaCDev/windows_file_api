@@ -7,20 +7,25 @@ namespace WindowsFileAPI_FileCreateAndDelete
     class FileCreateAndDelete
     {
     protected:
-        TCHAR *file_to_create;
+        std::vector<TCHAR *> files_to_create;
 
     public:
         /* Needed just in case developers explicitly includes this header file. */
-        explicit FileCreateAndDelete(TCHAR *filename)
-            : file_to_create(filename)
+        explicit FileCreateAndDelete(std::vector<TCHAR *>files)
+            : files_to_create(files)
         {
             check_valid_version();
         }
 
         explicit FileCreateAndDelete()
-            : file_to_create(nullptr)
         {
             check_valid_version();
+        }
+
+        void create_all()
+        {
+            for(auto i = files_to_create.cbegin(); i != files_to_create.cend(); i++)
+                create_explicit<TCHAR *>(*i);
         }
 
         template<typename T = const char *>
@@ -28,7 +33,7 @@ namespace WindowsFileAPI_FileCreateAndDelete
             requires std::is_same<T, const char *>::value
                 || std::is_same<T, TCHAR *>::value
         #endif
-        void create_file(T filename)
+        void create_explicit(T filename)
         {
             /* First check to see if the file already exists. */
             HANDLE hHandle = CreateFile(

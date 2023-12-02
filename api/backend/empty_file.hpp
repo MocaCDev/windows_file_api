@@ -7,12 +7,12 @@ namespace WindowsFileAPI_EmptyFile
     class EmptyFile
     {
     protected:
-        TCHAR *file_to_empty;
+        std::vector<TCHAR *> files_to_empty;
 
     public:
         /* Needed just in case developers explicitly includes this header file. */
-        explicit EmptyFile(TCHAR *filename)
-            : file_to_empty(filename)
+        explicit EmptyFile(std::vector<TCHAR *> files)
+            : files_to_empty(files)
         {
             /* This is kind of repetitive, but it needs to be otherwise there will be complications
              * upon developers including these header files explicitly.
@@ -21,9 +21,14 @@ namespace WindowsFileAPI_EmptyFile
         }
 
         explicit EmptyFile()
-            : file_to_empty(nullptr)
         {
             check_valid_version();
+        }
+
+        void empty_all()
+        {
+            for(auto i = files_to_empty.cbegin(); i != files_to_empty.cend(); i++)
+                empty_file_BN<TCHAR *>(*i);
         }
 
         /* empty_file_BN - Empty a file by name (BN).
@@ -106,7 +111,7 @@ namespace WindowsFileAPI_EmptyFile
          *  Windows only. Else, they will run into errors. (shouldn't be a problem)
          * 
          * Arguments:
-         *  Nothing.
+         *  file - the file to delete within `files_to_empty`
          * 
          * Returns:
          *  Nothing.
@@ -115,11 +120,25 @@ namespace WindowsFileAPI_EmptyFile
          *  empty_file_NN will error if:
          *      1. The file passed to the constructor of said object does not exist.
          *      2. The recreation of the file does not proceed as it should.
+         *      3. The file passed as an argument was not found in `files_to_empty`
          * 
          * */
-        void empty_file_WD()
+        void empty_file_WD(TCHAR *file)
         {
-            empty_file_BN<TCHAR *>(file_to_empty);
+            if(files_to_empty.size() == 0) return;
+            for(auto i = files_to_empty.cbegin(); i != files_to_empty.cend(); i++)
+            {
+                if(strcmp((const char *)*i, (const char *)file) == 0)
+                {
+                    empty_file_BN<TCHAR *>(*i);
+                    return;
+                }
+            }
+
+            /* Error if the files was not found.
+             * Could be useful just in case the developer makes a mistake.
+             * */
+            error("The file %s was not found in the vector of files to empty.\n")
         }
 
         /* is_file_empty_BN - Check if a file is empty by name (BN).
@@ -171,7 +190,7 @@ namespace WindowsFileAPI_EmptyFile
          *  See above disclaimer for `empty_file_WD`; same applies to below function.
          * 
          * Arguments:
-         *  Nothing.
+         *  file - the file the developer wants to check
          * 
          * Errors:
          *  None.
@@ -180,9 +199,16 @@ namespace WindowsFileAPI_EmptyFile
          *  BOOL - TRUE if file is empty/does not exist, FALSE if file is not empty.
          * 
          * */
-        BOOL is_file_empty_WD()
+        BOOL is_file_empty_WD(TCHAR *file)
         {
-            return is_file_empty_BN(file_to_empty);
+            for(auto i = files_to_empty.cbegin(); i != files_to_empty.cend(); i++)
+            {
+                if(strcmp((const char *)*i, (const char *)file) == 0)
+                    return is_file_empty_BN<TCHAR *>(*i);
+            }
+
+            /* If we get here, the file does not exist. Just return TRUE. */
+            return TRUE;
         }
 
         ~EmptyFile() = default;
