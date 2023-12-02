@@ -64,12 +64,16 @@ namespace WindowsFileAPI_BaseAPI
             /* Do nothing if both are false (which are there default values)*/
             if(!A && !B) return;
 
+            /* Make sure the size is at least >= 1 >= 2. */
+            assert(files.size() >= 1 || files.size() >= 2,
+                "Too few files in vector passed to BaseAPI constructor.\n")
+            
+            /* If both A and B are true, make sure the size of the vector
+             * is at least 2.
+             * */
             if(A && B)
-                assert(files.size() < 2,
-                    "Too few files in the vector passed to BaseAPI.\n")
-            else
-                assert(files.size() >= 1,
-                    "Too few files in the vector passed to BaseAPI.\n")
+                assert(files.size() >= 2,
+                    "Too few files in vector passed to BaseAPI constructor.\n")
 
             if(A) { empty_file_object = new EmptyFile(files[0]); }//return; }
             if(B) { create_and_delete_object = new FileCreateAndDelete(files[1]); }//return; }
