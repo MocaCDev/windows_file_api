@@ -26,6 +26,18 @@ namespace WindowsFileAPI_FileCreateAndDelete
             check_valid_version();
         }
 
+        void set_file_to_create(TCHAR *file)
+        {
+            if(file_to_create) delete file_to_create;
+
+            /* Allocate heap memory and copy over the value. */
+            file_to_create = new TCHAR[strlen((const char *)file) + 1];
+            assert(file_to_create,
+                "Error allocating heap memory for `file_to_create`.\n\tTry running program again.\n")
+            
+            memcpy(file_to_create, file, strlen((const char *)file) + 1);
+        }
+
         template<typename T = const char *>
         #ifndef WRONG_VERSION /* avoid compilation errors in a case where the developer is not using C++20. */
             requires std::is_same<T, const char *>::value
@@ -54,7 +66,7 @@ namespace WindowsFileAPI_FileCreateAndDelete
                     GENERIC_WRITE,
                     FILE_SHARE_WRITE,
                     NULL,
-                    OPEN_ALWAYS,
+                    CREATE_NEW,
                     FILE_ATTRIBUTE_NORMAL,
                     NULL
                 );
@@ -80,9 +92,16 @@ namespace WindowsFileAPI_FileCreateAndDelete
                 if(is_file_empty_BN(filename) == FALSE)
                     empty_file_BN(filename);
             
+            /* The desired access will always be FILE_APPEND_DATA.
+             *
+             * Regardless if the file gets emptied or not; if it gets emptied,
+             * the data will get appended from the position of 0, else it will
+             * append from wherever the file last ended off at.
+             * 
+             * */
             HANDLE hHandle = CreateFile(
                 filename,
-                GENERIC_WRITE,
+                FILE_APPEND_DATA,
                 FILE_SHARE_WRITE,
                 NULL,
                 OPEN_EXISTING,
@@ -124,7 +143,10 @@ namespace WindowsFileAPI_FileCreateAndDelete
             create_file_and_write_BN(file_to_create, data, clear_file_if_exists);
         }
 
-        ~FileCreateAndDelete() = default;
+        ~FileCreateAndDelete()
+        {
+            if(file_to_create) delete file_to_create;
+        }
     };
 }
 

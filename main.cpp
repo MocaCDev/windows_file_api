@@ -16,7 +16,8 @@ int main(int args, char *argv[])
     std::vector<TCHAR *> f{(TCHAR *)"test_file"};
 
     BaseAPI api;
-    api.empty_file_BN("test_file");
+    api.set_file_to_empty((TCHAR *)"test_file2");
+    api.empty_file_WD();
 
     //assert(api.is_file_empty_BN(static_cast<const char *>("test_file")),
     //    "File did not get emptied.\n")

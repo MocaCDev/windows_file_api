@@ -26,6 +26,17 @@ namespace WindowsFileAPI_EmptyFile
             check_valid_version();
         }
 
+        void set_file_to_empty(TCHAR *file)
+        {
+            if(file_to_empty) delete file_to_empty;
+
+            file_to_empty = new TCHAR[strlen((const char *)file) + 1];
+            assert(file_to_empty,
+                "Error allocating heap memory for `file_to_empty`.\n\tTry running program again.\n")
+            
+            memcpy(file_to_empty, file, strlen((const char *)file) + 1);
+        }
+
         /* empty_file_BN - Empty a file by name (BN).
          *
          * Arguments:
@@ -191,7 +202,10 @@ namespace WindowsFileAPI_EmptyFile
             return is_file_empty_BN<TCHAR *>(file_to_empty);
         }
 
-        ~EmptyFile() = default;
+        ~EmptyFile()
+        {
+            if(file_to_empty) delete file_to_empty;
+        }
     };
 }
 
